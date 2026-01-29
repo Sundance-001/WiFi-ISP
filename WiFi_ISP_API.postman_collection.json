@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "WiFi ISP API",
+    "description": "Complete API testing collection for WiFi ISP Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Packages",
+      "item": [
+        {
+          "name": "Get All Packages",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/packages"
+          }
+        },
+        {
+          "name": "Get Hourly Packages",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/packages/type/hourly"
+          }
+        },
+        {
+          "name": "Get Weekly Packages",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/packages/type/weekly"
+          }
+        },
+        {
+          "name": "Get Monthly Packages",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/packages/type/monthly"
+          }
+        },
+        {
+          "name": "Get Package by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/packages/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Create Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sessions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+254700000000\",\n  \"package_id\": 1,\n  \"duration_hours\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Get User Active Sessions",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/sessions/phone/+254700000000"
+          }
+        },
+        {
+          "name": "Check Session Validity",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/sessions/token/{{session_token}}"
+          }
+        },
+        {
+          "name": "End Session",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/sessions/1/end"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "Register Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/devices",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+254700000000\",\n  \"mac_address\": \"00:1A:2B:3C:4D:5E\",\n  \"device_name\": \"My iPhone\",\n  \"device_type\": \"phone\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get User Devices",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/devices/phone/+254700000000"
+          }
+        },
+        {
+          "name": "Check Device Limit",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/devices/phone/+254700000000/limit"
+          }
+        },
+        {
+          "name": "Deactivate Device",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/devices/1/deactivate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vouchers",
+      "item": [
+        {
+          "name": "Validate Voucher",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/vouchers/WIFI1234567890"
+          }
+        },
+        {
+          "name": "Redeem Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/vouchers/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WIFI1234567890\",\n  \"phone\": \"+254700000000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get User Vouchers",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/vouchers/phone/+254700000000/redeemed"
+          }
+        },
+        {
+          "name": "Get Active Vouchers",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/vouchers/active?skip=0&limit=50"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": 1,\n  \"phone\": \"+254700000000\",\n  \"amount\": 10.00,\n  \"method\": \"mpesa\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/payments/1/confirm?mpesa_receipt=LHJ221P123"
+          }
+        },
+        {
+          "name": "Get Payment History",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/payments/phone/+254700000000/history?limit=10"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Get Contact Info",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/contact"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8001",
+      "type": "string"
+    },
+    {
+      "key": "session_token",
+      "value": "your_session_token_here",
+      "type": "string"
+    }
+  ]
+}

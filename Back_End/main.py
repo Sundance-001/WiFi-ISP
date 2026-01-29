@@ -19,7 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
-from routers import health, packages, contact
+from database import Base, engine
+from routers import health, packages, contact, session, devices, payment
 
 # ============================================================================
 # APP CONFIGURATION & METADATA
@@ -69,6 +70,11 @@ async def lifespan(app: FastAPI):
     """
     # ---- STARTUP ----
     logger.info(f"🚀 {APP_TITLE} v{APP_VERSION} starting up...")
+    
+    # Create all database tables
+    Base.metadata.create_all(bind=engine)
+    logger.info("✓ Database tables initialized")
+    
     logger.info("✓ Database connections initialized")
     logger.info("✓ Cache layer ready")
     logger.info("✓ Services loaded")
@@ -203,6 +209,9 @@ async def general_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router)
 app.include_router(packages.router)
 app.include_router(contact.router)
+app.include_router(session.router)
+app.include_router(devices.router)
+app.include_router(payment.router)
 
 
 # ============================================================================

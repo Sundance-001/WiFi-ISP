@@ -23,7 +23,7 @@ async def get_contact_info():
         dict: Company contact details including phone, email, address, and website
     """
     return {
-        "company": "WiFi ISP",
+        "company": "WHi",
         "phone": "+1 555 555 5555",
         "email": "support@wifisp.example.com",
         "address": "123 Network Ave, City, State",

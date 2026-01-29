@@ -4,7 +4,12 @@ Provides endpoints for managing and retrieving WiFi packages.
 """
 
 import logging
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from database import get_db
+from services.package_service import PackageService
+from models.package import PackageType
+from schemas.package import PackageListResponse, PackageResponse
 
 logger = logging.getLogger(__name__)
 
@@ -14,47 +19,51 @@ router = APIRouter(
 )
 
 
-@router.get("/packages")
-async def get_packages():
+@router.get("/packages", response_model=PackageListResponse)
+async def get_packages(db: Session = Depends(get_db)):
     """
     Get all available WiFi packages.
 
     Returns:
-        dict: Available packages organized by type (hourly, weekly, monthly)
+        PackageListResponse: List of all active packages with count
     """
-    return {
-        "packages": [
-            {
-                "id": "hourly",
-                "name": "Hourly Plans",
-                "description": "Pay by the hour",
-                "plans": [
-                    {"duration": "1 hour", "price": 0.50},
-                    {"duration": "3 hours", "price": 1.25},
-                    {"duration": "8 hours", "price": 2.50},
-                    {"duration": "16 hours", "price": 4.00},
-                    {"duration": "24 hours", "price": 6.00},
-                ],
-            },
-            {
-                "id": "weekly",
-                "name": "Weekly Plans",
-                "description": "7 days of access",
-                "plans": [
-                    {"speed": "5 Mbps", "price": 7},
-                    {"speed": "20 Mbps", "price": 12},
-                    {"speed": "100 Mbps", "price": 20},
-                ],
-            },
-            {
-                "id": "monthly",
-                "name": "Monthly Plans",
-                "description": "30 days of access",
-                "plans": [
-                    {"speed": "5 Mbps", "price": 25},
-                    {"speed": "20 Mbps", "price": 45},
-                    {"speed": "100 Mbps", "price": 90},
-                ],
-            },
-        ]
-    }
+    packages, total = PackageService.get_all_packages(db)
+    return {"total": total, "packages": packages}
+
+
+@router.get("/packages/type/{package_type}", response_model=PackageListResponse)
+async def get_packages_by_type(package_type: PackageType, db: Session = Depends(get_db)):
+    """
+    Get packages filtered by type (hourly, weekly, monthly).
+
+    Args:
+        package_type: The type of packages to retrieve
+
+    Returns:
+        PackageListResponse: List of packages of the specified type
+    """
+    packages = PackageService.get_packages_by_type(db, package_type)
+    return {"total": len(packages), "packages": packages}
+
+
+@router.get("/packages/{package_id}", response_model=PackageResponse)
+async def get_package(package_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific package by ID.
+
+    Args:
+        package_id: The package ID
+
+    Returns:
+        PackageResponse: Package details
+
+    Raises:
+        HTTPException: 404 if package not found
+    """
+    package = PackageService.get_package_by_id(db, package_id)
+    if not package:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Package not found"
+        )
+    return package
